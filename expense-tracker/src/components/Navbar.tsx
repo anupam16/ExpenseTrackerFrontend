@@ -5,9 +5,11 @@ import { YearDropdown } from "./DropDownMenu";
 
 type NavbarProps = {
   onExpenseCreated?: (message: string) => void;
+  selectedYear: string;
+  onYearChange: (year: string) => void;
 };
 
-function Navbar({ onExpenseCreated }: NavbarProps) {
+function Navbar({ onExpenseCreated, selectedYear, onYearChange }: NavbarProps) {
   const navigate = useNavigate();
   const logoutMutation = useLogoutMutation();
 
@@ -24,9 +26,7 @@ function Navbar({ onExpenseCreated }: NavbarProps) {
       <h2 className="text-2xl font-bold">Spend it</h2>
       <div className="flex items-center gap-4">
         <div className="py-2 px-4">
-          <YearDropdown
-            onSelect={(year) => console.log("Selected year:", year)}
-          />
+          <YearDropdown value={selectedYear} onSelect={onYearChange} />
         </div>
         <DialogDefault onExpenseCreated={onExpenseCreated} />
         <button

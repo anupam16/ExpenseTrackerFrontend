@@ -15,8 +15,25 @@ const months = [
   "December",
 ];
 
-const MonthTabs: React.FC = () => {
-  const [activeMonth, setActiveMonth] = useState<string>("January");
+type MonthTabsProps = {
+  activeMonth?: string;
+  onChange?: (month: string) => void;
+};
+
+const MonthTabs: React.FC<MonthTabsProps> = ({
+  activeMonth: activeMonthProp,
+  onChange,
+}) => {
+  const [internalActiveMonth, setInternalActiveMonth] =
+    useState<string>("January");
+  const activeMonth = activeMonthProp ?? internalActiveMonth;
+
+  const handleMonthChange = (month: string) => {
+    if (!activeMonthProp) {
+      setInternalActiveMonth(month);
+    }
+    onChange?.(month);
+  };
 
   return (
     <div className="w-full ">
@@ -27,7 +44,7 @@ const MonthTabs: React.FC = () => {
         {months.map((month) => (
           <button
             key={month}
-            onClick={() => setActiveMonth(month)}
+            onClick={() => handleMonthChange(month)}
             className={`
               flex-shrink-0 px-8 py-3 text-sm font-medium
                transition-all duration-200

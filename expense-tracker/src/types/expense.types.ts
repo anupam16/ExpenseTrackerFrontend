@@ -7,5 +7,7 @@ export type ExpenseItem = {
   title: string;
   amount: number;
   category: CategoryType;
-  tag?: string;
+  description?: string;
+  date?: string;
+  tags?: string[];
 };

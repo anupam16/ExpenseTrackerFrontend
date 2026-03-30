@@ -13,6 +13,7 @@ type DropdownProps = {
 
 type YearDropdownProps = {
   onSelect?: (year: string) => void;
+  value?: string;
 };
 
 const Dropdown: React.FC<DropdownProps> = ({ label, items, onSelect }) => {
@@ -67,13 +68,19 @@ const Dropdown: React.FC<DropdownProps> = ({ label, items, onSelect }) => {
   );
 };
 
-const YearDropdown: React.FC<YearDropdownProps> = ({ onSelect }) => {
+const YearDropdown: React.FC<YearDropdownProps> = ({ onSelect, value }) => {
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState<string>(
-    currentYear.toString(),
+    value ?? currentYear.toString(),
   );
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (value) {
+      setSelectedYear(value);
+    }
+  }, [value]);
 
   // Generate years from current year - 4 to current year (past 4 years + current)
   const years = Array.from({ length: 5 }, (_, i) => currentYear - 4 + i);

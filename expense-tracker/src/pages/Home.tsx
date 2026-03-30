@@ -3,32 +3,66 @@ import Dashboard from "@/components/Dashboard";
 import KeyIndicator from "@/components/KeyIndicator";
 import MonthTabs from "@/components/MonthTabs";
 import Navbar from "@/components/Navbar";
+import { useExpensesByYearQuery } from "@/features/expenses/hooks";
 import type { ExpenseItem } from "@/types/expense.types";
 
-function Home() {
-  const [notification, setNotification] = useState<string | null>(null);
-  const expenses: ExpenseItem[] = [
-    {
-      id: "1",
-      title: "Snacks",
-      amount: 300,
-      category: "snacks",
-    },
-    {
-      id: "2",
-      title: "Transportation",
-      amount: 200,
-      category: "transportation",
-    },
-    {
-      id: "3",
-      title: "Shopping",
-      amount: 500,
-      category: "shopping",
-    },
-  ];
+const monthNames = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
-  const totalsByCategory = expenses.reduce(
+const apiCategoryToUiCategory: Record<string, ExpenseItem["category"]> = {
+  Food: "food",
+  Shopping: "shopping",
+  Transport: "transport",
+  Bills: "bills",
+  Entertainment: "entertainment",
+  Other: "other",
+};
+
+function Home() {
+  const currentDate = new Date();
+  const [selectedYear, setSelectedYear] = useState(
+    String(currentDate.getFullYear()),
+  );
+  const [selectedMonth, setSelectedMonth] = useState(
+    monthNames[currentDate.getMonth()],
+  );
+  const [notification, setNotification] = useState<string | null>(null);
+  const expensesQuery = useExpensesByYearQuery(Number(selectedYear));
+
+  const expenses: ExpenseItem[] =
+    expensesQuery.data?.data.map((item) => ({
+      id: item.id,
+      title: item.title,
+      amount: Number(item.amount),
+      category: apiCategoryToUiCategory[item.category] ?? "other",
+      date: item.date,
+      description: item.description,
+      tags: item.tags,
+    })) ?? [];
+
+  const selectedMonthIndex = monthNames.indexOf(selectedMonth);
+  const filteredExpenses = expenses.filter((item) => {
+    if (!item.date || selectedMonthIndex < 0) {
+      return false;
+    }
+
+    const expenseDate = new Date(item.date);
+    return expenseDate.getMonth() === selectedMonthIndex;
+  });
+
+  const totalsByCategory = filteredExpenses.reduce(
     (acc, item) => {
       acc[item.category] = (acc[item.category] || 0) + item.amount;
       return acc;
@@ -55,15 +89,26 @@ function Home() {
 
   return (
     <div>
-      <Navbar onExpenseCreated={setNotification} />
+      <Navbar
+        selectedYear={selectedYear}
+        onYearChange={setSelectedYear}
+        onExpenseCreated={setNotification}
+      />
       {notification ? (
         <div className="fixed right-4 top-4 z-50 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 shadow-lg">
           {notification}
         </div>
       ) : null}
-      <MonthTabs />
+      <MonthTabs activeMonth={selectedMonth} onChange={setSelectedMonth} />
+      {expensesQuery.isError ? (
+        <div className="mx-2 mt-2 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
+          {expensesQuery.error instanceof Error
+            ? expensesQuery.error.message
+            : "Failed to load expenses."}
+        </div>
+      ) : null}
       <div className="grid grid-cols-2 gap-4 p-2 ">
-        <Dashboard data={expenses} />
+        <Dashboard data={filteredExpenses} />
         <KeyIndicator data={chartItems} />
       </div>
     </div>

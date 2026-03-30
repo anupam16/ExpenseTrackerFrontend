@@ -38,3 +38,26 @@ export type CreateExpenseResponse = {
     updatedAt: string;
   };
 };
+
+export type ExpenseApiItem = {
+  id: string;
+  title: string;
+  description: string;
+  amount: string;
+  date: string;
+  category: ExpenseCategory;
+  tags: string[];
+  aiNote: string | null;
+  aiProvider: string | null;
+  aiConfidence: number | null;
+  isManualEdited: boolean;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type GetExpensesByYearResponse = {
+  success: boolean;
+  count: number;
+  data: ExpenseApiItem[];
+};

@@ -7,17 +7,54 @@ type DashboardProps = {
 };
 
 function Dashboard({ data }: DashboardProps) {
+  const totalExpense = data.reduce((sum, item) => sum + item.amount, 0);
+  const groupedByDay = data.reduce(
+    (acc, item) => {
+      const dayKey = item.date
+        ? new Date(item.date).toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            weekday: "short",
+          })
+        : "Unknown date";
+
+      if (!acc[dayKey]) {
+        acc[dayKey] = [];
+      }
+
+      acc[dayKey].push(item);
+      return acc;
+    },
+    {} as Record<string, ExpenseItem[]>,
+  );
+
+  const groupedEntries = Object.entries(groupedByDay);
+
   return (
     <div className="overflow-y-auto p-4 space-y-4">
-      <InfoCard title="Balance" value="₹1,250.00" bgColor="bg-blue-300" />
+      <InfoCard
+        title="Balance"
+        value={`₹${Math.max(2500 - totalExpense, 0).toFixed(2)}`}
+        bgColor="bg-blue-300"
+      />
       <div className="flex w-full ">
         <InfoCard title="Income" value="₹2,500.00" bgColor="bg-green-300" />
-        <InfoCard title="Expense" value="₹1,250.00" bgColor="bg-red-300" />
+        <InfoCard
+          title="Expense"
+          value={`₹${totalExpense.toFixed(2)}`}
+          bgColor="bg-red-300"
+        />
       </div>
 
-      <DayExpenseList day="January 22, Sun" items={data} />
-      <DayExpenseList day="January 22, Sun" items={data} />
-      <DayExpenseList day="January 22, Sun" items={data} />
+      {groupedEntries.length > 0 ? (
+        groupedEntries.map(([day, items]) => (
+          <DayExpenseList key={day} day={day} items={items} />
+        ))
+      ) : (
+        <div className="rounded-xl bg-gray-100 p-4 text-sm text-gray-600">
+          No expenses found for selected year/month.
+        </div>
+      )}
     </div>
   );
 }

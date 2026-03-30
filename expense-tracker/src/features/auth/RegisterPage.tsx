@@ -100,7 +100,10 @@ function RegisterPage() {
 
         <section className="p-6 sm:p-10">
           <div className="max-w-md w-full mx-auto">
-            <h2 className="text-3xl font-bold text-slate-900">
+            <h2
+              className="text-3xl font-bold text-black!"
+              style={{ color: "#020617" }}
+            >
               Create Account
             </h2>
             <p className="mt-2 text-sm text-slate-500">

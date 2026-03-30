@@ -79,7 +79,12 @@ function LoginPage() {
 
         <section className="p-6 sm:p-10">
           <div className="max-w-md w-full mx-auto">
-            <h2 className="text-3xl font-bold text-slate-900">Welcome Back</h2>
+            <h2
+              className="text-3xl font-bold text-black!"
+              style={{ color: "#020617" }}
+            >
+              Welcome Back
+            </h2>
             <p className="mt-2 text-sm text-slate-500">
               Login to continue to your account
             </p>

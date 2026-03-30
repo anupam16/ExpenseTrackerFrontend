@@ -3,7 +3,11 @@ import { useLogoutMutation } from "@/features/auth/hooks";
 import { DialogDefault } from "./DialogDefault";
 import { YearDropdown } from "./DropDownMenu";
 
-function Navbar() {
+type NavbarProps = {
+  onExpenseCreated?: (message: string) => void;
+};
+
+function Navbar({ onExpenseCreated }: NavbarProps) {
   const navigate = useNavigate();
   const logoutMutation = useLogoutMutation();
 
@@ -24,7 +28,7 @@ function Navbar() {
             onSelect={(year) => console.log("Selected year:", year)}
           />
         </div>
-        <DialogDefault />
+        <DialogDefault onExpenseCreated={onExpenseCreated} />
         <button
           type="button"
           onClick={handleLogout}

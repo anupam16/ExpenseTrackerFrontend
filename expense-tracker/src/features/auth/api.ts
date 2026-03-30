@@ -1,0 +1,77 @@
+import { z } from "zod";
+import type { LoginPayload, LoginResponse, LogoutResponse } from "./types";
+
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5000";
+
+const loginResponseSchema = z.object({
+  success: z.boolean(),
+  message: z.string(),
+  data: z.object({
+    accessToken: z.string(),
+    user: z.object({
+      id: z.string(),
+      name: z.string(),
+      email: z.string(),
+    }),
+  }),
+});
+
+const logoutResponseSchema = z.object({
+  success: z.boolean(),
+  message: z.string(),
+});
+
+export async function login(payload: LoginPayload): Promise<LoginResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const json = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    const message =
+      json && typeof json.message === "string"
+        ? json.message
+        : "Login failed. Please try again.";
+    throw new Error(message);
+  }
+
+  const parsed = loginResponseSchema.safeParse(json);
+  if (!parsed.success) {
+    throw new Error("Unexpected response from server.");
+  }
+
+  return parsed.data;
+}
+
+export async function logout(accessToken: string): Promise<LogoutResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/auth/logout`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  const json = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    const message =
+      json && typeof json.message === "string"
+        ? json.message
+        : "Logout failed. Please try again.";
+    throw new Error(message);
+  }
+
+  const parsed = logoutResponseSchema.safeParse(json);
+  if (!parsed.success) {
+    throw new Error("Unexpected response from server.");
+  }
+
+  return parsed.data;
+}

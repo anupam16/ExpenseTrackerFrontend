@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { API_BASE_URL, fetchWithAutoRefresh } from "./authenticatedFetch";
 import type {
+  AuthMeResponse,
   LoginPayload,
   LoginResponse,
   LogoutResponse,
@@ -29,6 +30,16 @@ const logoutResponseSchema = z.object({
 const registerResponseSchema = z.object({
   success: z.boolean(),
   message: z.string(),
+  data: z.object({
+    id: z.string(),
+    name: z.string(),
+    email: z.string(),
+    createdAt: z.string(),
+  }),
+});
+
+const meResponseSchema = z.object({
+  success: z.boolean(),
   data: z.object({
     id: z.string(),
     name: z.string(),
@@ -115,6 +126,30 @@ export async function register(
   const parsed = registerResponseSchema.safeParse(json);
   if (!parsed.success) {
     throw new Error("Unexpected response from server.");
+  }
+
+  return parsed.data;
+}
+
+export async function getMyProfile(): Promise<AuthMeResponse> {
+  const response = await fetchWithAutoRefresh(`${API_BASE_URL}/api/auth/me`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  const json = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    const message =
+      json && typeof json.message === "string"
+        ? json.message
+        : "Failed to load profile.";
+    throw new Error(message);
+  }
+
+  const parsed = meResponseSchema.safeParse(json);
+  if (!parsed.success) {
+    throw new Error("Unexpected profile response from server.");
   }
 
   return parsed.data;

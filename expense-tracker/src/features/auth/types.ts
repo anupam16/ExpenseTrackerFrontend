@@ -15,6 +15,13 @@ export type AuthUser = {
   email: string;
 };
 
+export type AuthMeData = {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: string;
+};
+
 export type LoginResponse = {
   success: boolean;
   message: string;
@@ -38,4 +45,9 @@ export type RegisterResponse = {
     email: string;
     createdAt: string;
   };
+};
+
+export type AuthMeResponse = {
+  success: boolean;
+  data: AuthMeData;
 };

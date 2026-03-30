@@ -61,3 +61,13 @@ export type GetExpensesByYearResponse = {
   count: number;
   data: ExpenseApiItem[];
 };
+
+export type ExpenseSummaryResponse = {
+  success: boolean;
+  data: {
+    month: string;
+    total: number;
+    categories: Record<string, number>;
+    aiSummary: string;
+  };
+};

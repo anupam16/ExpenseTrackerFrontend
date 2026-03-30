@@ -3,7 +3,10 @@ import Dashboard from "@/components/Dashboard";
 import KeyIndicator from "@/components/KeyIndicator";
 import MonthTabs from "@/components/MonthTabs";
 import Navbar from "@/components/Navbar";
-import { useExpensesByYearQuery } from "@/features/expenses/hooks";
+import {
+  useExpenseSummaryQuery,
+  useExpensesByYearQuery,
+} from "@/features/expenses/hooks";
 import type { ExpenseItem } from "@/types/expense.types";
 
 const monthNames = [
@@ -40,6 +43,9 @@ function Home() {
   );
   const [notification, setNotification] = useState<string | null>(null);
   const expensesQuery = useExpensesByYearQuery(Number(selectedYear));
+  const selectedMonthIndex = monthNames.indexOf(selectedMonth);
+  const monthParam = `${selectedYear}-${String(selectedMonthIndex + 1).padStart(2, "0")}`;
+  const summaryQuery = useExpenseSummaryQuery(monthParam);
 
   const expenses: ExpenseItem[] =
     expensesQuery.data?.data.map((item) => ({
@@ -52,7 +58,6 @@ function Home() {
       tags: item.tags,
     })) ?? [];
 
-  const selectedMonthIndex = monthNames.indexOf(selectedMonth);
   const filteredExpenses = expenses.filter((item) => {
     if (!item.date || selectedMonthIndex < 0) {
       return false;
@@ -109,7 +114,18 @@ function Home() {
       ) : null}
       <div className="grid grid-cols-2 gap-4 p-2 ">
         <Dashboard data={filteredExpenses} />
-        <KeyIndicator data={chartItems} />
+        <KeyIndicator
+          data={chartItems}
+          summary={summaryQuery.data?.data}
+          summaryLoading={summaryQuery.isLoading}
+          summaryError={
+            summaryQuery.isError
+              ? summaryQuery.error instanceof Error
+                ? summaryQuery.error.message
+                : "Failed to load summary."
+              : null
+          }
+        />
       </div>
     </div>
   );

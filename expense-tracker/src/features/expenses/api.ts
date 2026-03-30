@@ -3,6 +3,7 @@ import { authStorage } from "@/features/auth/storage";
 import type {
   CreateExpensePayload,
   CreateExpenseResponse,
+  ExpenseSummaryResponse,
   GetExpensesByYearResponse,
 } from "./types";
 
@@ -65,6 +66,16 @@ const getExpensesByYearResponseSchema = z.object({
   success: z.boolean(),
   count: z.number(),
   data: z.array(expenseApiItemSchema),
+});
+
+const expenseSummaryResponseSchema = z.object({
+  success: z.boolean(),
+  data: z.object({
+    month: z.string(),
+    total: z.number(),
+    categories: z.record(z.string(), z.number()),
+    aiSummary: z.string(),
+  }),
 });
 
 export async function createExpense(
@@ -133,6 +144,44 @@ export async function getExpensesByYear(
   const parsed = getExpensesByYearResponseSchema.safeParse(json);
   if (!parsed.success) {
     throw new Error("Unexpected expenses response from server.");
+  }
+
+  return parsed.data;
+}
+
+export async function getExpenseSummary(
+  month: string,
+): Promise<ExpenseSummaryResponse> {
+  const token = authStorage.getAccessToken();
+
+  if (!token) {
+    throw new Error("You are not authenticated.");
+  }
+
+  const response = await fetch(
+    `${API_BASE_URL}/api/expenses/summary?month=${month}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    },
+  );
+
+  const json = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    const message =
+      json && typeof json.message === "string"
+        ? json.message
+        : "Failed to fetch summary.";
+    throw new Error(message);
+  }
+
+  const parsed = expenseSummaryResponseSchema.safeParse(json);
+  if (!parsed.success) {
+    throw new Error("Unexpected summary response from server.");
   }
 
   return parsed.data;

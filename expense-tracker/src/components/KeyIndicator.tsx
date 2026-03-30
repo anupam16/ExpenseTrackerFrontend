@@ -5,8 +5,18 @@ type ChartItem = {
   value: number;
 };
 
+type ExpenseSummaryData = {
+  month: string;
+  total: number;
+  categories: Record<string, number>;
+  aiSummary: string;
+};
+
 type KeyIndicatorProps = {
   data: ChartItem[];
+  summary?: ExpenseSummaryData;
+  summaryLoading?: boolean;
+  summaryError?: string | null;
 };
 
 const defaultColors = [
@@ -20,8 +30,14 @@ const defaultColors = [
   "bg-lime-500",
 ];
 
-const KeyIndicator: React.FC<KeyIndicatorProps> = ({ data }) => {
+const KeyIndicator: React.FC<KeyIndicatorProps> = ({
+  data,
+  summary,
+  summaryLoading = false,
+  summaryError = null,
+}) => {
   const total = data.reduce((sum, item) => sum + item.value, 0);
+  const summaryText = summary?.aiSummary.replace(/\*\*/g, "");
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-4 h-full">
@@ -67,6 +83,42 @@ const KeyIndicator: React.FC<KeyIndicatorProps> = ({ data }) => {
             </div>
           );
         })}
+      </div>
+
+      <div className="mt-6 border-t border-gray-200 pt-4">
+        <h4 className="text-sm font-semibold text-gray-900">AI Summary</h4>
+
+        {summaryLoading ? (
+          <div className="mt-3 space-y-2 animate-pulse">
+            <div className="h-4 w-1/3 rounded bg-gray-200" />
+            <div className="h-3 w-full rounded bg-gray-200" />
+            <div className="h-3 w-11/12 rounded bg-gray-200" />
+            <div className="h-3 w-10/12 rounded bg-gray-200" />
+            <div className="h-3 w-8/12 rounded bg-gray-200" />
+          </div>
+        ) : null}
+
+        {!summaryLoading && summaryError ? (
+          <p className="mt-2 text-sm text-rose-600">{summaryError}</p>
+        ) : null}
+
+        {!summaryLoading && !summaryError && summary ? (
+          <div className="mt-3 space-y-2">
+            <p className="text-xs text-gray-500">
+              Month:{" "}
+              <span className="font-medium text-gray-700">{summary.month}</span>
+            </p>
+            <p className="text-xs text-gray-500">
+              Total:{" "}
+              <span className="font-medium text-gray-700">
+                ₹{summary.total}
+              </span>
+            </p>
+            <p className="text-sm text-gray-700 whitespace-pre-line leading-6">
+              {summaryText}
+            </p>
+          </div>
+        ) : null}
       </div>
     </div>
   );

@@ -111,7 +111,7 @@ const YearDropdown: React.FC<YearDropdownProps> = ({ onSelect, value }) => {
       {/* Button */}
       <button
         onClick={() => setOpen(!open)}
-        className="bg-white text-black px-4 py-2 rounded-lg shadow hover:bg-gray-100 transition flex items-center gap-2"
+        className="bg-white text-black px-3 py-1.5 text-sm rounded-lg shadow hover:bg-gray-100 transition flex items-center gap-1.5"
       >
         {selectedYear}
         <span className="text-sm">{open ? "▲" : "▼"}</span>
@@ -119,13 +119,13 @@ const YearDropdown: React.FC<YearDropdownProps> = ({ onSelect, value }) => {
 
       {/* Menu */}
       {open && (
-        <div className="absolute mt-2 w-48 bg-white border rounded-lg shadow-lg z-50">
-          <ul className="py-1">
+        <div className="absolute mt-2 w-40 bg-white border rounded-lg shadow-lg z-50">
+          <ul className="py-1 text-sm">
             {years.map((year) => (
               <li
                 key={year}
                 onClick={() => handleSelect(year.toString())}
-                className={`px-4 py-2 hover:bg-gray-100 cursor-pointer text-black ${
+                className={`px-3 py-1.5 hover:bg-gray-100 cursor-pointer text-black ${
                   year.toString() === selectedYear ? "bg-gray-200" : ""
                 }`}
               >

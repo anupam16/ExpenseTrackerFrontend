@@ -190,7 +190,7 @@ export function DialogDefault({ onExpenseCreated }: DialogDefaultProps) {
     <>
       <button
         onClick={handleOpen}
-        className="px-5 py-2.5 bg-white text-slate-900 rounded-xl shadow hover:bg-slate-100 transition font-semibold"
+        className="px-3 py-1.5 bg-white text-slate-900 text-sm rounded-lg shadow hover:bg-slate-100 transition font-semibold"
       >
         Add Entry
       </button>

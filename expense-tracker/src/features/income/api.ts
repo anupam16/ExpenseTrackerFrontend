@@ -12,10 +12,18 @@ import type {
 const incomeItemSchema = z.object({
   id: z.string(),
   title: z.string(),
-  amount: z.string(),
+  amount: z.union([z.string(), z.number()]).transform((value) => String(value)),
   date: z.string(),
-  source: z.string(),
-  description: z.string(),
+  source: z
+    .string()
+    .nullable()
+    .optional()
+    .transform((value) => value ?? ""),
+  description: z
+    .string()
+    .nullable()
+    .optional()
+    .transform((value) => value ?? ""),
   userId: z.string(),
   createdAt: z.string(),
   updatedAt: z.string(),

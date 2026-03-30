@@ -34,6 +34,26 @@ const apiCategoryToUiCategory: Record<string, ExpenseItem["category"]> = {
   Other: "other",
 };
 
+function getYearMonthKey(dateValue: string): string | null {
+  if (!dateValue) {
+    return null;
+  }
+
+  const directIsoMatch = dateValue.match(/^(\d{4}-\d{2})/);
+  if (directIsoMatch) {
+    return directIsoMatch[1];
+  }
+
+  const parsed = new Date(dateValue);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+
+  const year = parsed.getFullYear();
+  const month = String(parsed.getMonth() + 1).padStart(2, "0");
+  return `${year}-${month}`;
+}
+
 function Home() {
   const currentDate = new Date();
   const [selectedYear, setSelectedYear] = useState(
@@ -65,16 +85,12 @@ function Home() {
       return false;
     }
 
-    const expenseDate = new Date(item.date);
-    return expenseDate.getMonth() === selectedMonthIndex;
+    return getYearMonthKey(item.date) === monthParam;
   });
 
   const monthlyIncomeTotal =
     incomeQuery.data?.data
-      .filter((item) => {
-        const incomeDate = new Date(item.date);
-        return incomeDate.getMonth() === selectedMonthIndex;
-      })
+      .filter((item) => getYearMonthKey(item.date) === monthParam)
       .reduce((sum, item) => sum + Number(item.amount), 0) ?? 0;
 
   const totalsByCategory = filteredExpenses.reduce(
@@ -112,16 +128,16 @@ function Home() {
         />
       </div>
       {notification ? (
-        <div className="fixed right-4 top-20 z-50 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 shadow-lg">
+        <div className="fixed right-4 top-16 z-50 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 shadow-lg">
           {notification}
         </div>
       ) : null}
 
-      <div className="fixed inset-x-0 top-18 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
+      <div className="fixed inset-x-0 top-14 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
         <MonthTabs activeMonth={selectedMonth} onChange={setSelectedMonth} />
       </div>
 
-      <div className="h-full pt-31 px-2 pb-2">
+      <div className="h-full pt-27 px-2 pb-2">
         {expensesQuery.isError ? (
           <div className="mb-2 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
             {expensesQuery.error instanceof Error

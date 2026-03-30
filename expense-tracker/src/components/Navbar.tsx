@@ -22,10 +22,10 @@ function Navbar({ onExpenseCreated, selectedYear, onYearChange }: NavbarProps) {
   };
 
   return (
-    <div className="bg-black text-white py-3 px-4 flex justify-between items-center">
-      <h2 className="text-2xl font-bold">Spend it</h2>
-      <div className="flex items-center gap-4">
-        <div className="py-2 px-4">
+    <div className="bg-black text-white py-2 px-4 flex justify-between items-center">
+      <h2 className="text-xl font-bold">Spend it</h2>
+      <div className="flex items-center gap-2">
+        <div className="py-0.5 px-1">
           <YearDropdown value={selectedYear} onSelect={onYearChange} />
         </div>
         <DialogDefault onExpenseCreated={onExpenseCreated} />
@@ -33,7 +33,7 @@ function Navbar({ onExpenseCreated, selectedYear, onYearChange }: NavbarProps) {
           type="button"
           onClick={handleLogout}
           disabled={logoutMutation.isPending}
-          className="px-4 py-2 rounded-lg border border-white/30 text-white hover:bg-white/10 transition disabled:opacity-60 disabled:cursor-not-allowed"
+          className="px-2.5 py-1.5 text-sm rounded-lg border border-white/30 text-white hover:bg-white/10 transition disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {logoutMutation.isPending ? "Logging out..." : "Logout"}
         </button>

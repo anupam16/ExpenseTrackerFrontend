@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
-import { login, logout } from "./api";
+import { login, logout, register } from "./api";
 import { authStorage } from "./storage";
-import type { LoginPayload } from "./types";
+import type { LoginPayload, RegisterPayload } from "./types";
 
 export function useLoginMutation() {
   return useMutation({
@@ -26,5 +26,11 @@ export function useLogoutMutation() {
     onSettled: () => {
       authStorage.clearSession();
     },
+  });
+}
+
+export function useRegisterMutation() {
+  return useMutation({
+    mutationFn: (payload: RegisterPayload) => register(payload),
   });
 }

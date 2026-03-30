@@ -3,6 +3,12 @@ export type LoginPayload = {
   password: string;
 };
 
+export type RegisterPayload = {
+  name: string;
+  email: string;
+  password: string;
+};
+
 export type AuthUser = {
   id: string;
   name: string;
@@ -21,4 +27,15 @@ export type LoginResponse = {
 export type LogoutResponse = {
   success: boolean;
   message: string;
+};
+
+export type RegisterResponse = {
+  success: boolean;
+  message: string;
+  data: {
+    id: string;
+    name: string;
+    email: string;
+    createdAt: string;
+  };
 };

@@ -93,39 +93,53 @@ function Home() {
   }, [notification]);
 
   return (
-    <div>
-      <Navbar
-        selectedYear={selectedYear}
-        onYearChange={setSelectedYear}
-        onExpenseCreated={setNotification}
-      />
+    <div className="h-screen overflow-hidden bg-slate-50">
+      <div className="fixed inset-x-0 top-0 z-40">
+        <Navbar
+          selectedYear={selectedYear}
+          onYearChange={setSelectedYear}
+          onExpenseCreated={setNotification}
+        />
+      </div>
       {notification ? (
-        <div className="fixed right-4 top-4 z-50 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 shadow-lg">
+        <div className="fixed right-4 top-20 z-50 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 shadow-lg">
           {notification}
         </div>
       ) : null}
-      <MonthTabs activeMonth={selectedMonth} onChange={setSelectedMonth} />
-      {expensesQuery.isError ? (
-        <div className="mx-2 mt-2 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
-          {expensesQuery.error instanceof Error
-            ? expensesQuery.error.message
-            : "Failed to load expenses."}
+
+      <div className="fixed inset-x-0 top-18 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
+        <MonthTabs activeMonth={selectedMonth} onChange={setSelectedMonth} />
+      </div>
+
+      <div className="h-full pt-31 px-2 pb-2">
+        {expensesQuery.isError ? (
+          <div className="mb-2 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
+            {expensesQuery.error instanceof Error
+              ? expensesQuery.error.message
+              : "Failed to load expenses."}
+          </div>
+        ) : null}
+
+        <div className="grid h-full gap-4 lg:grid-cols-2">
+          <div className="h-full overflow-y-auto rounded-xl">
+            <Dashboard data={filteredExpenses} />
+          </div>
+
+          <div className="h-full overflow-y-auto lg:sticky lg:top-0">
+            <KeyIndicator
+              data={chartItems}
+              summary={summaryQuery.data?.data}
+              summaryLoading={summaryQuery.isLoading}
+              summaryError={
+                summaryQuery.isError
+                  ? summaryQuery.error instanceof Error
+                    ? summaryQuery.error.message
+                    : "Failed to load summary."
+                  : null
+              }
+            />
+          </div>
         </div>
-      ) : null}
-      <div className="grid grid-cols-2 gap-4 p-2 ">
-        <Dashboard data={filteredExpenses} />
-        <KeyIndicator
-          data={chartItems}
-          summary={summaryQuery.data?.data}
-          summaryLoading={summaryQuery.isLoading}
-          summaryError={
-            summaryQuery.isError
-              ? summaryQuery.error instanceof Error
-                ? summaryQuery.error.message
-                : "Failed to load summary."
-              : null
-          }
-        />
       </div>
     </div>
   );

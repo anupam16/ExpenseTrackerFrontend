@@ -1,73 +1,108 @@
-# React + TypeScript + Vite
+# Expense Tracker Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend for a JWT-authenticated expense tracker built with React, TypeScript, Vite, Tailwind CSS, React Query, React Router, and Zod.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Authentication: login, register, logout
+- Protected routing: home page accessible only for authenticated users
+- Access-token refresh flow for protected API calls
+- Add entry modal with mode toggle:
+  - Expense creation
+  - Income creation
+- Year dropdown + month tabs filtering
+- Dynamic dashboard cards:
+  - Monthly Income
+  - Monthly Expense
+  - Balance (Income - Expense)
+- Expense chart section
+- AI summary block with loading skeleton
+- Navbar profile section using `/api/auth/me`
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React 19
+- TypeScript
+- Vite 8
+- Tailwind CSS 4
+- React Router DOM
+- TanStack React Query
+- Zod
 
-## Expanding the ESLint configuration
+## Project Setup
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 1. Install dependencies
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Configure environment
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Create a `.env` file in the project root:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+VITE_API_BASE_URL=http://localhost:5000
 ```
+
+If omitted, the app defaults to `http://localhost:5000`.
+
+### 3. Start development server
+
+```bash
+npm run dev
+```
+
+### 4. Build for production
+
+```bash
+npm run build
+```
+
+### 5. Preview production build
+
+```bash
+npm run preview
+```
+
+## Available Scripts
+
+- `npm run dev` - start Vite dev server
+- `npm run build` - TypeScript build + Vite production build
+- `npm run lint` - run ESLint
+- `npm run preview` - preview production build locally
+
+## API Endpoints Used
+
+### Auth
+
+- `POST /api/auth/login`
+- `POST /api/auth/register`
+- `POST /api/auth/logout`
+- `POST /api/auth/refresh-token`
+- `GET /api/auth/me`
+
+### Expenses
+
+- `POST /api/expenses`
+- `GET /api/expenses?year=YYYY`
+- `GET /api/expenses/summary?month=YYYY-MM`
+
+### Income
+
+- `POST /api/income`
+- `GET /api/income?year=YYYY`
+
+## Folder Highlights
+
+- `src/features/auth` - auth types, API, hooks, pages, storage
+- `src/features/expenses` - expense types, API, hooks, schemas
+- `src/features/income` - income types, API, hooks, schemas
+- `src/components` - navbar, modal, dashboard, month tabs, chart area
+- `src/pages/Home.tsx` - main dashboard orchestration and filtering logic
+
+## Notes
+
+- Protected API requests use a shared authenticated fetch utility.
+- On `401`, the app attempts token refresh and retries the request once.
+- If refresh fails, session is cleared and user is treated as logged out.

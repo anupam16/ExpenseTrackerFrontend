@@ -8,6 +8,10 @@ export const authStorage = {
     return localStorage.getItem(ACCESS_TOKEN_KEY);
   },
 
+  setAccessToken(accessToken: string): void {
+    localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
+  },
+
   getUser(): AuthUser | null {
     const raw = localStorage.getItem(USER_KEY);
     if (!raw) {

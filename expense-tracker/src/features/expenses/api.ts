@@ -1,14 +1,14 @@
 import { z } from "zod";
-import { authStorage } from "@/features/auth/storage";
+import {
+  API_BASE_URL,
+  fetchWithAutoRefresh,
+} from "@/features/auth/authenticatedFetch";
 import type {
   CreateExpensePayload,
   CreateExpenseResponse,
   ExpenseSummaryResponse,
   GetExpensesByYearResponse,
 } from "./types";
-
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5000";
 
 const createExpenseResponseSchema = z.object({
   success: z.boolean(),
@@ -81,18 +81,9 @@ const expenseSummaryResponseSchema = z.object({
 export async function createExpense(
   payload: CreateExpensePayload,
 ): Promise<CreateExpenseResponse> {
-  const token = authStorage.getAccessToken();
-
-  if (!token) {
-    throw new Error("You are not authenticated.");
-  }
-
-  const response = await fetch(`${API_BASE_URL}/api/expenses`, {
+  const response = await fetchWithAutoRefresh(`${API_BASE_URL}/api/expenses`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
 
@@ -117,19 +108,13 @@ export async function createExpense(
 export async function getExpensesByYear(
   year: number,
 ): Promise<GetExpensesByYearResponse> {
-  const token = authStorage.getAccessToken();
-
-  if (!token) {
-    throw new Error("You are not authenticated.");
-  }
-
-  const response = await fetch(`${API_BASE_URL}/api/expenses?year=${year}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
+  const response = await fetchWithAutoRefresh(
+    `${API_BASE_URL}/api/expenses?year=${year}`,
+    {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
     },
-  });
+  );
 
   const json = await response.json().catch(() => null);
 
@@ -152,20 +137,11 @@ export async function getExpensesByYear(
 export async function getExpenseSummary(
   month: string,
 ): Promise<ExpenseSummaryResponse> {
-  const token = authStorage.getAccessToken();
-
-  if (!token) {
-    throw new Error("You are not authenticated.");
-  }
-
-  const response = await fetch(
+  const response = await fetchWithAutoRefresh(
     `${API_BASE_URL}/api/expenses/summary?month=${month}`,
     {
       method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
     },
   );
 

@@ -7,6 +7,7 @@ import {
   useExpenseSummaryQuery,
   useExpensesByYearQuery,
 } from "@/features/expenses/hooks";
+import { useIncomeByYearQuery } from "@/features/income/hooks";
 import type { ExpenseItem } from "@/types/expense.types";
 
 const monthNames = [
@@ -43,6 +44,7 @@ function Home() {
   );
   const [notification, setNotification] = useState<string | null>(null);
   const expensesQuery = useExpensesByYearQuery(Number(selectedYear));
+  const incomeQuery = useIncomeByYearQuery(Number(selectedYear));
   const selectedMonthIndex = monthNames.indexOf(selectedMonth);
   const monthParam = `${selectedYear}-${String(selectedMonthIndex + 1).padStart(2, "0")}`;
   const summaryQuery = useExpenseSummaryQuery(monthParam);
@@ -66,6 +68,14 @@ function Home() {
     const expenseDate = new Date(item.date);
     return expenseDate.getMonth() === selectedMonthIndex;
   });
+
+  const monthlyIncomeTotal =
+    incomeQuery.data?.data
+      .filter((item) => {
+        const incomeDate = new Date(item.date);
+        return incomeDate.getMonth() === selectedMonthIndex;
+      })
+      .reduce((sum, item) => sum + Number(item.amount), 0) ?? 0;
 
   const totalsByCategory = filteredExpenses.reduce(
     (acc, item) => {
@@ -120,9 +130,20 @@ function Home() {
           </div>
         ) : null}
 
+        {incomeQuery.isError ? (
+          <div className="mb-2 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
+            {incomeQuery.error instanceof Error
+              ? incomeQuery.error.message
+              : "Failed to load income."}
+          </div>
+        ) : null}
+
         <div className="grid h-full gap-4 lg:grid-cols-2">
           <div className="h-full overflow-y-auto rounded-xl">
-            <Dashboard data={filteredExpenses} />
+            <Dashboard
+              data={filteredExpenses}
+              incomeTotal={monthlyIncomeTotal}
+            />
           </div>
 
           <div className="h-full overflow-y-auto lg:sticky lg:top-0">

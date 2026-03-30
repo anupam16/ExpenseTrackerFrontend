@@ -4,10 +4,12 @@ import type { ExpenseItem } from "@/types/expense.types";
 
 type DashboardProps = {
   data: ExpenseItem[];
+  incomeTotal: number;
 };
 
-function Dashboard({ data }: DashboardProps) {
+function Dashboard({ data, incomeTotal }: DashboardProps) {
   const totalExpense = data.reduce((sum, item) => sum + item.amount, 0);
+  const totalBalance = incomeTotal - totalExpense;
   const groupedByDay = data.reduce(
     (acc, item) => {
       const dayKey = item.date
@@ -34,11 +36,15 @@ function Dashboard({ data }: DashboardProps) {
     <div className="overflow-y-auto p-4 space-y-4">
       <InfoCard
         title="Balance"
-        value={`₹${Math.max(2500 - totalExpense, 0).toFixed(2)}`}
+        value={`₹${totalBalance.toFixed(2)}`}
         bgColor="bg-blue-300"
       />
       <div className="flex w-full ">
-        <InfoCard title="Income" value="₹2,500.00" bgColor="bg-green-300" />
+        <InfoCard
+          title="Income"
+          value={`₹${incomeTotal.toFixed(2)}`}
+          bgColor="bg-green-300"
+        />
         <InfoCard
           title="Expense"
           value={`₹${totalExpense.toFixed(2)}`}

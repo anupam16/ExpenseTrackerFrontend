@@ -14,15 +14,7 @@ export function useLoginMutation() {
 
 export function useLogoutMutation() {
   return useMutation({
-    mutationFn: async () => {
-      const token = authStorage.getAccessToken();
-
-      if (!token) {
-        return { success: true, message: "No active session." };
-      }
-
-      return logout(token);
-    },
+    mutationFn: () => logout(),
     onSettled: () => {
       authStorage.clearSession();
     },

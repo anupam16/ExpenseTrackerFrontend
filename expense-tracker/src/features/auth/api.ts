@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { API_BASE_URL, fetchWithAutoRefresh } from "./authenticatedFetch";
 import type {
   LoginPayload,
   LoginResponse,
@@ -6,9 +7,6 @@ import type {
   RegisterPayload,
   RegisterResponse,
 } from "./types";
-
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5000";
 
 const loginResponseSchema = z.object({
   success: z.boolean(),
@@ -66,14 +64,14 @@ export async function login(payload: LoginPayload): Promise<LoginResponse> {
   return parsed.data;
 }
 
-export async function logout(accessToken: string): Promise<LogoutResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/auth/logout`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
+export async function logout(): Promise<LogoutResponse> {
+  const response = await fetchWithAutoRefresh(
+    `${API_BASE_URL}/api/auth/logout`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
     },
-  });
+  );
 
   const json = await response.json().catch(() => null);
 

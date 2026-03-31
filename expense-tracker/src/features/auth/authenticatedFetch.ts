@@ -22,6 +22,7 @@ async function refreshAccessToken(): Promise<string> {
   refreshPromise = (async () => {
     const response = await fetch(`${API_BASE_URL}/api/auth/refresh-token`, {
       method: "POST",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
@@ -100,6 +101,7 @@ export async function fetchWithAutoRefresh(
     return response;
   } catch {
     authStorage.clearSession();
+    window.location.href = "/login";
     return response;
   }
 }

@@ -6,7 +6,6 @@ export const API_BASE_URL =
 
 const refreshTokenResponseSchema = z.object({
   success: z.boolean(),
-  message: z.string(),
   data: z.object({
     accessToken: z.string(),
   }),
@@ -23,9 +22,6 @@ async function refreshAccessToken(): Promise<string> {
     const response = await fetch(`${API_BASE_URL}/api/auth/refresh-token`, {
       method: "POST",
       credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
     });
 
     const json = await response.json().catch(() => null);

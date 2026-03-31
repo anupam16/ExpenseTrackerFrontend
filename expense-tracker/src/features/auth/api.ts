@@ -51,6 +51,7 @@ const meResponseSchema = z.object({
 export async function login(payload: LoginPayload): Promise<LoginResponse> {
   const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
     method: "POST",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
@@ -80,6 +81,7 @@ export async function logout(): Promise<LogoutResponse> {
     `${API_BASE_URL}/api/auth/logout`,
     {
       method: "POST",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
     },
   );
@@ -107,6 +109,7 @@ export async function register(
 ): Promise<RegisterResponse> {
   const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
     method: "POST",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },

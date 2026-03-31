@@ -106,6 +106,63 @@ function Home() {
     value,
   }));
 
+  const handleExportCsv = () => {
+    const yearlyExpenses = expensesQuery.data?.data ?? [];
+
+    if (yearlyExpenses.length === 0) {
+      setNotification("No expenses found for selected year.");
+      return;
+    }
+
+    const monthlyData = monthNames.map((month) => ({
+      month,
+      count: 0,
+      total: 0,
+    }));
+
+    for (const expense of yearlyExpenses) {
+      const parsedDate = new Date(expense.date);
+      if (Number.isNaN(parsedDate.getTime())) {
+        continue;
+      }
+
+      const monthIndex = parsedDate.getMonth();
+      if (monthIndex < 0 || monthIndex > 11) {
+        continue;
+      }
+
+      monthlyData[monthIndex].count += 1;
+      monthlyData[monthIndex].total += Number(expense.amount) || 0;
+    }
+
+    const header = ["Year", "Month", "ExpenseCount", "TotalExpense"];
+    const rows = monthlyData.map((item) => [
+      selectedYear,
+      item.month,
+      String(item.count),
+      item.total.toFixed(2),
+    ]);
+
+    const csvContent = [header, ...rows]
+      .map((row) =>
+        row.map((value) => `"${value.replace(/"/g, '""')}"`).join(","),
+      )
+      .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+
+    anchor.href = downloadUrl;
+    anchor.download = `expenses-${selectedYear}-monthly.csv`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+    window.URL.revokeObjectURL(downloadUrl);
+
+    setNotification("Monthly expense CSV exported.");
+  };
+
   useEffect(() => {
     if (!notification) {
       return;
@@ -125,6 +182,8 @@ function Home() {
           selectedYear={selectedYear}
           onYearChange={setSelectedYear}
           onExpenseCreated={setNotification}
+          onExportCsv={handleExportCsv}
+          exportDisabled={expensesQuery.isLoading || expensesQuery.isError}
         />
       </div>
       {notification ? (

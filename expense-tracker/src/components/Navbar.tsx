@@ -7,9 +7,17 @@ type NavbarProps = {
   onExpenseCreated?: (message: string) => void;
   selectedYear: string;
   onYearChange: (year: string) => void;
+  onExportCsv: () => void;
+  exportDisabled?: boolean;
 };
 
-function Navbar({ onExpenseCreated, selectedYear, onYearChange }: NavbarProps) {
+function Navbar({
+  onExpenseCreated,
+  selectedYear,
+  onYearChange,
+  onExportCsv,
+  exportDisabled = false,
+}: NavbarProps) {
   const navigate = useNavigate();
   const logoutMutation = useLogoutMutation();
   const profileQuery = useMyProfileQuery();
@@ -52,6 +60,14 @@ function Navbar({ onExpenseCreated, selectedYear, onYearChange }: NavbarProps) {
           <YearDropdown value={selectedYear} onSelect={onYearChange} />
         </div>
         <DialogDefault onExpenseCreated={onExpenseCreated} />
+        <button
+          type="button"
+          onClick={onExportCsv}
+          disabled={exportDisabled}
+          className="px-2.5 py-1.5 text-sm rounded-lg border border-white/30 text-white hover:bg-white/10 transition disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          Export CSV
+        </button>
         <button
           type="button"
           onClick={handleLogout}
